@@ -1,4 +1,4 @@
-package org.example.sweater;
+package org.example.sweater.controller;
 
 import org.example.sweater.domain.Message;
 import org.example.sweater.repos.MessageRepo;
@@ -12,27 +12,26 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class GreetingController {
+public class MainController {
     @Autowired
     private MessageRepo messagesRepo;
 
-    @GetMapping("/greeting")
-    public String greeting(
-            @RequestParam(name="name", required = false, defaultValue = "World") String name,
-            Map<String, Object> model
-    ){
-        model.put("name", name);
+    @GetMapping("/")
+    // главная страница
+    public String greeting(Map<String, Object> model){
         return "greeting";
     }
 
-    @GetMapping
+    //  страница main.mustache с блоками ввода сообщения, фильтрации собщения и списком сообщений
+    @GetMapping("/main")
     public String main(Map<String, Object> model){
         Iterable<Message> messageIterable = messagesRepo.findAll();
 
         model.put("messages", messageIterable);
         return "main";
     }
-    @PostMapping("add")
+    // добавления сообщений
+    @PostMapping("/add")
     public String add(@RequestParam String text, @RequestParam String tag, Map<String, Object> model){
         Message message = new Message(text, tag);
 
@@ -42,9 +41,9 @@ public class GreetingController {
 
         model.put("messages", messageIterable);
 
-        return "main";
+        return "redirect:/main";
     }
-
+    //Контроллер фильтрации сообщений
     @PostMapping("filter")
     public String filter(@RequestParam String filter, Map<String, Object> model){
         Iterable<Message> messages;
